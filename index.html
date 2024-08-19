@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>eNotes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@200;400;600;900&display=swap" rel="stylesheet">
+    <style>
+        @font-face {
+            font-family: 'Source Sans 3';
+            src: url('fonts\SourceSans3.ttf') format('truetype');
+            font-weight: 200 900;
+            font-style: normal;
+        }
+    
+        @font-face {
+            font-family: 'Source Sans 3';
+            src: url('fonts/SourceSans3.ttf') format('truetype');
+            font-weight: 200 900;
+            font-style: normal;
+        }
+    
+        body {
+            font-family: 'Source Sans 3', Arial, sans-serif;
+        }
+    </style>
+    <style>
+        body {
+            font-family: 'Source Sans 3', Arial, sans-serif;
+            margin: 0;
+            padding: 10px;
+            background-color: #f0f0f0;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 10px;
+        }
+        
+        
+        .note {
+    display: flex;
+    background-color: #fff; /* Color de fondo para modo diurno */
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: background-color 0.3s;
+}
+body.dark-mode .menu-button img,
+body.dark-mode .icon-button img {
+  filter: brightness(0) invert(1);
+}
+
+.note.highlighted {
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+}
+
+.sub-note {
+    background-color: #f5f5f5; /* Color de fondo para modo diurno */
+    border-radius: 5px;
+    margin-bottom: 5px;
+    padding: 5px 5px 5px 10px;
+    display: flex;
+    align-items: center;
+    min-height: 30px;
+    transition: background-color 0.3s;
+    user-select:none;
+    
+    
+}
+        .note.selected {
+            border: 2px solid #24acf2;
+        }
+        .color-indicator {
+    width: 20px;
+    height: 20px;
+    border-radius: 5px;
+    margin-right: 10px;
+}
+
+.sub-note.selected {
+    outline: 2px solid #24acf2;
+}
+
+
+.sub-note.completed .sub-note-text {
+    text-decoration: line-through;
+}
+#menu {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 10px;
+    margin-bottom: 10px;
+    transition: transform 0.3s, opacity 0.3s;
+    transform-origin: bottom right;
+}
+
+#menu.hidden {
+    transform: scale(0);
+    opacity: 0;
+}
+
+.menu-button {
+    background-color: #24acf2;
+    border: none;
+    width: 48px;
+    height: 48px;
+    cursor: pointer;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.3s, opacity 0.3s;
+}
+.menu-button img {
+    width: 20px;
+    height: 20px;
+}
+
+        .color-picker, .due-date-picker {
+            display: none;
+        }
+        .sortable-ghost {
+            opacity: 0.5;
+            background: #c8ebfb;
+        }
+        .context-menu {
+    position: fixed;
+    background: white;
+    border: 1px solid #ccc;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+    z-index: 1000;
+}
+        
+.context-menu-item {
+    padding: 8px 10px;
+    cursor: pointer;
+}
+.context-menu-item:hover {
+    background-color: #f0f0f0;
+}
+
+#floating-menu {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: flex-end;
+    z-index: 1000;
+}
+.floating-button {
+    background-color: #24acf2;
+    border: none;
+    border-radius: 50%;
+    width: 56px;
+    height: 56px;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    transition: opacity 0.3s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1001;
+}
+.floating-button:hover {
+    opacity: 0.8;
+}
+
+.floating-button img {
+    width: 24px;
+    height: 24px;
+}
+        #search {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        .filter-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        #category-filter {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px 0 0 5px;
+            background-color: #fff;
+        }
+        .icon-button {
+            background-color: #24acf2;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 0 5px 5px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .icon-button img {
+            width: 20px;
+            height: 20px;
+        }
+        body.dark-mode {
+            background-color: #333;
+            color: #fff;
+        }
+        body.dark-mode .note {
+            background-color: #444;
+            color: #fff;
+        }
+
+        body.dark-mode .floating-button,
+body.dark-mode .menu-button {
+    background-color: #444;
+}
+
+
+
+body.dark-mode .floating-button img,
+body.dark-mode .menu-button img {
+    filter: brightness(0) invert(1);
+}
+
+        body.dark-mode #search,
+        body.dark-mode #category-filter,
+        body.dark-mode .menu-button,
+        body.dark-mode .icon-button {
+            background-color: #292929;
+            color: #fff;
+            border-color: #666;
+        }
+        .sub-note.completed .sub-note-text {
+    text-decoration: line-through;
+    opacity: 0.5;
+}
+        
+        body.dark-mode .context-menu {
+            background-color: #444;
+            border-color: #666;
+        }
+        body.dark-mode .context-menu-item {
+            color: #fff;
+        }
+        body.dark-mode .context-menu-item:hover {
+            background-color: #555;
+        }
+        .note-content {
+    flex-grow: 1;
+}
+
+.note-category {
+    font-size: 0.8em;
+
+    margin-bottom: 5px;
+    cursor: pointer;
+    display: inline-block; /* Cambia de block a inline-block */
+    max-width: 30%; /* Limita el ancho al 30% del contenedor padre */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+        .note-due-date {
+            font-size: 0.8em;
+            color: #666;
+            margin-top: 5px;
+        }
+        body.dark-mode .note-category,
+        body.dark-mode .note-due-date {
+            color: #aaa;
+        }
+        .sub-notes-container {
+            margin-top: 10px;
+        }
+
+
+        .sub-note {
+    background-color: #333333;
+    border-radius: 5px;
+    margin-bottom: 5px;
+    padding: 5px 5px 5px 10px;
+    display: flex;
+    align-items: center;
+    min-height: 30px; /* Asegura una altura mínima */
+}
+
+        .sub-note-content {
+    display: flex;
+    align-items: center;
+}
+.sub-note-color {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+    margin-right: 5px; /* Aumentado el margen derecho */
+    margin-left: 5px;
+    flex-shrink: 0;
+}
+
+
+.sub-note .color-picker {
+    display: none;
+    margin-left: auto;
+}
+
+.sub-note:hover .color-picker {
+    display: block;
+}
+body.dark-mode .icon-button img {
+  filter: brightness(0) invert(1);
+}
+
+.quick-color-picker {
+    display: flex;
+    background-color: white;
+    padding: 5px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    position: fixed;
+}
+
+.color-option {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    margin: 0 2px;
+    cursor: pointer;
+}
+
+.custom-color {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f0f0f0;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+body.dark-mode .quick-color-picker {
+    background-color: #333;
+}
+
+body.dark-mode .custom-color {
+    background-color: #555;
+    color: white;
+}
+
+.custom-tooltip {
+    position: fixed;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    z-index: 10000;
+    pointer-events: none;
+    display: none;
+    white-space: nowrap;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    max-width: 200px; /* Añade esta línea para limitar el ancho máximo */
+    word-wrap: break-word; /* Añade esta línea para permitir que el texto se ajuste */
+}
+
+body.dark-mode .custom-tooltip {
+    background-color: rgba(255, 255, 255, 0.8);
+    color: black;
+}
+
+/* Menus de cambios */
+
+/* Estilos base para el diálogo */
+dialog {
+    border: none;
+    border-radius: 10px;
+    padding: 20px;
+    background-color: #f5f5f5;
+    color: #333;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    
+}
+
+dialog {
+    overflow: visible;
+}
+
+/* Estilos para el modo oscuro */
+body.dark-mode dialog {
+    background-color: #333;
+    color: #fff;
+}
+
+/* Estilos para el título del diálogo */
+dialog p {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+
+/* Estilos para el input y select */
+dialog input[type="text"],
+dialog select {
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+dialog {
+    width: 300px; /* O el ancho que prefieras */
+    max-width: 90vw; /* Para asegurar que se ajuste en pantallas pequeñas */
+}
+
+
+
+body.dark-mode dialog input[type="text"],
+body.dark-mode dialog select {
+    background-color: #444;
+    border-color: #555;
+    color: #fff;
+}
+
+/* Estilos para los botones */
+dialog button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+dialog button[type="submit"] {
+    background-color: #24acf2;
+    color: #fff;
+}
+
+dialog button[type="button"] {
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+body.dark-mode dialog button[type="submit"] {
+    background-color: #1a7db1;
+}
+
+body.dark-mode dialog button[type="button"] {
+    background-color: #555;
+    color: #fff;
+}
+
+dialog button:hover {
+    opacity: 0.9;
+}
+
+/* Contenedor de botones */
+dialog form > div {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px; /* Añade espacio entre el selector y los botones */
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <input type="text" id="search" placeholder="Buscar notas...">
+        <div class="filter-container">
+            <select id="category-filter">
+                <option value="all">Todas las categorías</option>
+            </select>
+            <button id="remove-category" class="icon-button" title="Eliminar categoría">
+                <img src="recursos/delete.svg" alt="Eliminar categoría">
+            </button>
+        </div>
+        <div id="notes-container"></div>
+    </div>
+    <div id="floating-menu">
+        <button id="main-menu-button" class="floating-button" title="Menú">
+            <img src="recursos/menu.svg" alt="Menú">
+        </button>
+        <div id="menu" class="hidden">
+
+            
+            <button id="toggle-dark-mode" class="menu-button" data-tooltip="Modo dia/noche"><img src="recursos/night.svg" alt="Modo Oscuro"></button>
+            <button id="set-due-date" class="menu-button" data-tooltip="Añadir fecha límite"><img src="recursos/calendar.svg" alt="Fecha Límite"></button>
+            <button id="quick-color" class="menu-button" data-tooltip="Seleccionar color"><img src="recursos/palette.svg" alt="Color Rápido"></button>
+            <button id="add-subnote" class="menu-button" data-tooltip="Añadir subnota"><img src="recursos/add-sub.svg" alt="Añadir Sub-Nota"></button>
+            <button id="add-note" class="menu-button" data-tooltip="Añadir nota"><img src="recursos/add.svg" alt="Añadir Nota"></button>
+        </div>
+    </div>
+
+    <div class="note-category" contenteditable="true"></div>
+
+    <dialog id="addCategoryDialog">
+        <form method="dialog">
+          <label for="newCategory">Ingrese nueva categoría:</label>
+          <input type="text" id="newCategory" placeholder="Nueva categoría...">
+          <div>
+            <button type="submit">OK</button>
+            <button type="button" id="cancelAddCategory">Cancelar</button>
+          </div>
+                <button type="submit">OK</button>
+                <button type="button" id="cancelBtn">Cancelar</button>
+            </div>
+        </form>
+    </dialog>
+
+    <dialog id="removeCategoryDialog">
+        <form method="dialog">
+            <p>Seleccione la categoría a eliminar:</p>
+            <select id="removeCategorySelect"></select>
+            <div>
+                <button type="submit">OK</button>
+                <button type="button" id="cancelRemoveBtn">Cancelar</button>
+            </div>
+        </form>
+    </dialog>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
+    <script src="renderer.js"></script>
+</body>
+</html>
